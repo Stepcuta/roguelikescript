@@ -109,6 +109,11 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		{
 				// Disable player
 				player.SetActive (false);
+
+	            // Disable enemies
+			    bat.SetActive (false);
+				zombie.SetActive (false);
+				healthPowerup.SetActive (false);
 		
 				// Reset tilemap
 				for (int i = 0; i < MAP_HEIGHT; i++) 
@@ -125,8 +130,8 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				foreach (Transform t in containerRooms.transform)
 						GameObject.Destroy (t.gameObject);
 		}
-	
-		// Generate a new dungeon with the given seed
+
+		// Generate a new dungeon with the given seedg
 		public void GenerateDungeon (int seed)
 		{
 				Debug.Log ("Generating QuadTree");
