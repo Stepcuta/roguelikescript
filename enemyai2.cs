@@ -19,7 +19,9 @@ void Start () {
 		target = go.transform;
 		attackTime = 0;
 		coolDown = 4.0f;
+
 	}
+
 void Update () {
 		Debug.DrawLine(target.position, myTransform.position, Color.red); 
 		float dist = Vector3.Distance(target.position, transform.position);
@@ -30,6 +32,7 @@ void Update () {
 			myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(targetDir), rotationSpeed * Time.deltaTime);
 			if (dist > 1){ // check min distance
 				// only move to the target if farther than min distance
+
 				myTransform.position += myTransform.forward * moveSpeed * Time.deltaTime;
 			}
 		}

@@ -30,13 +30,22 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		// Prefabs and Instance Management
 		public GameObject containerRooms;
 		public GameObject prefabWall01;
+		public GameObject prefabWall02;
+		public GameObject prefabWall03;
+		public GameObject prefabWall04;
+		public GameObject prefabWall05;
 		public GameObject prefabFloor01;
+		public GameObject prefabFloor02;
+		public GameObject prefabFloor03;
+		public GameObject prefabFloor04;
+		public GameObject prefabFloor05;
 		public GameObject meshCombiner;
 	
 		// Player	
 		public GameObject player;
 
 		// Enemies
+	public List<GameObject> enemies = new List<GameObject> ();
 		public GameObject bat;
 		public GameObject zombie;
 
@@ -110,8 +119,8 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				// Disable player
 				player.SetActive (false);
 
-	            // Disable enemies
-			    bat.SetActive (false);
+				// Disable enemies
+				bat.SetActive (false);
 				zombie.SetActive (false);
 				healthPowerup.SetActive (false);
 		
@@ -125,6 +134,10 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		
 				// Reset rooms
 				rooms.Clear ();
+
+		foreach (GameObject enemy in enemies) {
+			Destroy(enemy, 1);
+				}
 		
 				// Destroy tile GameObjects
 				foreach (Transform t in containerRooms.transform)
@@ -184,23 +197,35 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				Debug.Log ("Generating GameObjects, this may take a while..");
 		
 				// Instantiate prefabs
-				GenerateGameObjects (quadTree);
+		GameObject floor = new GameObject ();
+		GameObject wall = new GameObject ();
+		int randomDungeonScenery = Random.Range (0, 3);
+
+		if (randomDungeonScenery == 0) {
+						floor = prefabFloor01;
+						wall = prefabWall01;
+		} else if (randomDungeonScenery == 1) {
+			floor = prefabFloor02;
+			wall = prefabWall02;
+				}
+		else if (randomDungeonScenery == 2) {
+			floor = prefabFloor03;
+			wall = prefabWall03;
+		}
+		GenerateGameObjects (quadTree, floor, wall);
 
 				//Place powerups
 				for (int i = 0; i < 5; i++) {
-					int randRoom = Random.Range (0, rooms.Count - 1);
-					int randPowerup = Random.Range (0, 3);
+						int randRoom = Random.Range (0, rooms.Count - 1);
+						int randPowerup = Random.Range (0, 3);
 
-					if (randPowerup == 1)
-					{
-						Room chosenRoom = rooms [randRoom];
-						healthPowerup.SetActive (true);
-					healthPowerup.transform.position = new Vector3 (chosenRoom.boundary.center.x, 1.0f, chosenRoom.boundary.center.y);
-				Instantiate(healthPowerup);
-					}
-					else
-			{
-			}
+						if (randPowerup == 1) {
+								Room chosenRoom = rooms [randRoom];
+								healthPowerup.SetActive (true);
+								healthPowerup.transform.position = new Vector3 (chosenRoom.boundary.center.x, 1.0f, chosenRoom.boundary.center.y);
+								Instantiate (healthPowerup);
+						} else {
+						}
 				}
 			
 				// Place Player
@@ -263,12 +288,12 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				if (enemyType == "bat") {
 						bat.SetActive (true);
 						bat.transform.position = new Vector3 (room.boundary.center.x, 1.0f, room.boundary.center.y);
-						Instantiate (bat);
+						enemies.Add((GameObject)(Instantiate (bat)));
 						Debug.Log (bat.transform.position.x + ", " + bat.transform.position.y + ", " + bat.transform.position.z);
 				} else {
 						zombie.SetActive (true);
 						zombie.transform.position = new Vector3 (room.boundary.center.x, 1.0f, room.boundary.center.y);
-						Instantiate (zombie);
+				enemies.Add((GameObject)(Instantiate (zombie)));
 						Debug.Log (zombie.transform.position.x + ", " + zombie.transform.position.y + ", " + zombie.transform.position.z);
 				}
 		}
@@ -351,7 +376,7 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		}
 	
 		// Read tilemap and instantiate GameObjects
-		void GenerateGameObjects (QuadTree _quadtree)
+		void GenerateGameObjects (QuadTree _quadtree, GameObject floorObject, GameObject wallObject)
 		{
 				// If it's an end quadtree, read every pos and make a chunk of combined meshes
 				if (_quadtree.HasChildren () == false) {
@@ -359,21 +384,21 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 						for (int row = _quadtree.boundary.BottomTile(); row <= _quadtree.boundary.TopTile()-1; row++) {
 								for (int col = _quadtree.boundary.LeftTile(); col <= _quadtree.boundary.RightTile()-1; col++) {
 										int id = tiles [row, col].id;
-										if (id == Tile.TILE_ROOM || id == Tile.TILE_CORRIDOR) {
-												GameObject floor = GameObject.Instantiate (prefabFloor01, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
-												floor.transform.parent = container.transform;
-										} else if (id == Tile.TILE_WALL) {
-												GameObject wall = GameObject.Instantiate (prefabWall01, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
-												wall.transform.parent = container.transform;
-										}
+												if (id == Tile.TILE_ROOM || id == Tile.TILE_CORRIDOR) {
+						GameObject floor = GameObject.Instantiate (floorObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
+														floor.transform.parent = container.transform;
+												} else if (id == Tile.TILE_WALL) {
+						GameObject wall = GameObject.Instantiate (wallObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
+														wall.transform.parent = container.transform;
+												}
 								}
 						}
 						container.transform.parent = containerRooms.transform;
 				} else {
-						GenerateGameObjects (_quadtree.northWest);
-						GenerateGameObjects (_quadtree.northEast);
-						GenerateGameObjects (_quadtree.southWest);
-						GenerateGameObjects (_quadtree.southEast);
+						GenerateGameObjects (_quadtree.northWest, floorObject, wallObject);
+			GenerateGameObjects (_quadtree.northEast, floorObject, wallObject);
+			GenerateGameObjects (_quadtree.southWest, floorObject, wallObject);
+			GenerateGameObjects (_quadtree.southEast, floorObject, wallObject);
 				}
 
 		}
