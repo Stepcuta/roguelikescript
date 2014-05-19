@@ -45,11 +45,12 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		public GameObject player;
 
 		// Enemies
-	public List<GameObject> enemies = new List<GameObject> ();
+		public List<GameObject> enemyInstances = new List<GameObject> ();
 		public GameObject bat;
 		public GameObject zombie;
 
 		//Powerups
+		public List<GameObject> powerupInstances = new List<GameObject> ();
 		public GameObject healthPowerup;
 	
 		// The Random Seed
@@ -135,16 +136,18 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				// Reset rooms
 				rooms.Clear ();
 
-		foreach (GameObject enemy in enemies) {
-			Destroy(enemy, 1);
+				foreach (GameObject enemy in enemyInstances) {
+						Destroy (enemy, 1);
+				}
+
+				foreach (GameObject powerup in powerupInstances) {
+						Destroy (powerup, 1);
 				}
 		
 				// Destroy tile GameObjects
 				foreach (Transform t in containerRooms.transform)
 						GameObject.Destroy (t.gameObject);
-		}
-
-		// Generate a new dungeon with the given seedg
+		}		// Generate a new dungeon with the given seedg
 		public void GenerateDungeon (int seed)
 		{
 				Debug.Log ("Generating QuadTree");
@@ -197,22 +200,21 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 				Debug.Log ("Generating GameObjects, this may take a while..");
 		
 				// Instantiate prefabs
-		GameObject floor = new GameObject ();
-		GameObject wall = new GameObject ();
-		int randomDungeonScenery = Random.Range (0, 3);
+				GameObject floor = new GameObject ();
+				GameObject wall = new GameObject ();
+				int randomDungeonScenery = Random.Range (0, 3);
 
-		if (randomDungeonScenery == 0) {
+				if (randomDungeonScenery == 0) {
 						floor = prefabFloor01;
 						wall = prefabWall01;
-		} else if (randomDungeonScenery == 1) {
-			floor = prefabFloor02;
-			wall = prefabWall02;
+				} else if (randomDungeonScenery == 1) {
+						floor = prefabFloor02;
+						wall = prefabWall02;
+				} else if (randomDungeonScenery == 2) {
+						floor = prefabFloor03;
+						wall = prefabWall03;
 				}
-		else if (randomDungeonScenery == 2) {
-			floor = prefabFloor03;
-			wall = prefabWall03;
-		}
-		GenerateGameObjects (quadTree, floor, wall);
+				GenerateGameObjects (quadTree, floor, wall);
 
 				//Place powerups
 				for (int i = 0; i < 5; i++) {
@@ -223,12 +225,13 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 								Room chosenRoom = rooms [randRoom];
 								healthPowerup.SetActive (true);
 								healthPowerup.transform.position = new Vector3 (chosenRoom.boundary.center.x, 1.0f, chosenRoom.boundary.center.y);
-								Instantiate (healthPowerup);
+								powerupInstances.Add ((GameObject)(Instantiate (healthPowerup)));
 						} else {
 						}
 				}
 			
 				// Place Player
+				
 				int r = Random.Range (0, rooms.Count - 1);
 				Room room = rooms [r];
 				player.SetActive (true);
@@ -282,20 +285,18 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		}
 
 		public void GenerateEnemy (Room room, string enemyType)
-		{
-				Debug.Log ("Generating enemy");
-				
+		{				
 				if (enemyType == "bat") {
 						bat.SetActive (true);
 						bat.transform.position = new Vector3 (room.boundary.center.x, 1.0f, room.boundary.center.y);
-						enemies.Add((GameObject)(Instantiate (bat)));
-						Debug.Log (bat.transform.position.x + ", " + bat.transform.position.y + ", " + bat.transform.position.z);
+						enemyInstances.Add ((GameObject)(Instantiate (bat)));
 				} else {
 						zombie.SetActive (true);
 						zombie.transform.position = new Vector3 (room.boundary.center.x, 1.0f, room.boundary.center.y);
-				enemies.Add((GameObject)(Instantiate (zombie)));
-						Debug.Log (zombie.transform.position.x + ", " + zombie.transform.position.y + ", " + zombie.transform.position.z);
+						enemyInstances.Add ((GameObject)(Instantiate (zombie)));
 				}
+
+				room.containsEnemy = true;
 		}
 	
 		// Generate a single room
@@ -384,21 +385,21 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 						for (int row = _quadtree.boundary.BottomTile(); row <= _quadtree.boundary.TopTile()-1; row++) {
 								for (int col = _quadtree.boundary.LeftTile(); col <= _quadtree.boundary.RightTile()-1; col++) {
 										int id = tiles [row, col].id;
-												if (id == Tile.TILE_ROOM || id == Tile.TILE_CORRIDOR) {
-						GameObject floor = GameObject.Instantiate (floorObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
-														floor.transform.parent = container.transform;
-												} else if (id == Tile.TILE_WALL) {
-						GameObject wall = GameObject.Instantiate (wallObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
-														wall.transform.parent = container.transform;
-												}
+										if (id == Tile.TILE_ROOM || id == Tile.TILE_CORRIDOR) {
+												GameObject floor = GameObject.Instantiate (floorObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
+												floor.transform.parent = container.transform;
+										} else if (id == Tile.TILE_WALL) {
+												GameObject wall = GameObject.Instantiate (wallObject, new Vector3 (col, 0.0f, row), Quaternion.identity) as GameObject;
+												wall.transform.parent = container.transform;
+										}
 								}
 						}
 						container.transform.parent = containerRooms.transform;
 				} else {
 						GenerateGameObjects (_quadtree.northWest, floorObject, wallObject);
-			GenerateGameObjects (_quadtree.northEast, floorObject, wallObject);
-			GenerateGameObjects (_quadtree.southWest, floorObject, wallObject);
-			GenerateGameObjects (_quadtree.southEast, floorObject, wallObject);
+						GenerateGameObjects (_quadtree.northEast, floorObject, wallObject);
+						GenerateGameObjects (_quadtree.southWest, floorObject, wallObject);
+						GenerateGameObjects (_quadtree.southEast, floorObject, wallObject);
 				}
 
 		}

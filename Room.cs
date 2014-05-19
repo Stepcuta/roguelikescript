@@ -6,6 +6,7 @@ public class Room {
 
 	public AABB boundary;
 	public QuadTree quadtree;
+	public bool containsEnemy = false;
 	
 	public Room (AABB b)
 	{

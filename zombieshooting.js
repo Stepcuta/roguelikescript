@@ -1,5 +1,5 @@
 ﻿public var spitSpeed : float = 6000;
-public var spitPrefab : Transform;
+public var spit : GameObject;
 var LookAtTarget : Transform;
 var nextShotTime : float = 0.0;
 var timeBetweenShots : float = 2.0;
@@ -22,7 +22,8 @@ function Update()
 }
 
 function Shoot(){
-		var spit = Instantiate(spitPrefab, transform.Find("zombiebulletspawn").position, transform.Find("zombiebulletspawn").rotation);
-		spit.rigidbody.AddForce(transform.forward * spitSpeed);
+		var spit = Instantiate(spit, transform.position + Vector2(0, 0.6), Quaternion.identity);
+    spit.rigidbody.AddForce(transform.forward * spitSpeed);
+    Destroy(spit, Random.Range(0.4, 1));
 		//audio.PlayOneShot(gunshot);
 }
