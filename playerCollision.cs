@@ -3,12 +3,9 @@ using System.Collections;
 
 public class playerCollision : MonoBehaviour {
 
-	void OnTriggerEnter(Collider other) {
+	void OnCollisionEnter(Collision other) {
 
-		if (other.tag == "Enemy") {
-						Debug.Log ("Collide!" + other.tag);
-			Destroy (other, 1);
-				}
+		Debug.Log ("test");
 		
 	}
 }
