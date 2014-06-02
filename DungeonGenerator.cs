@@ -12,8 +12,8 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		public int MAP_HEIGHT = 128;
 	
 		// Room Parameters
-		public int ROOM_MAX_SIZE = 24;
-		public int ROOM_MIN_SIZE = 4;
+		public int ROOM_MAX_SIZE = 100;
+		public int ROOM_MIN_SIZE = 2;
 		public int ROOM_WALL_BORDER = 1;
 		public bool ROOM_UGLY_ENABLED = true;
 		public float ROOM_MAX_RATIO = 5.0f;
@@ -22,7 +22,7 @@ public class DungeonGenerator : MonoSingleton <DungeonGenerator>
 		public int MAX_DEPTH = 10;
 		public int CHANCE_STOP = 5;
 		public int SLICE_TRIES = 10;
-		public int CORRIDOR_WIDTH = 2;
+		public int CORRIDOR_WIDTH = 4;
 	
 		// Tilemap
 		public Tile[,] tiles;
