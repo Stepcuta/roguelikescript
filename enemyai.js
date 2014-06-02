@@ -3,7 +3,7 @@ public var Projectile : Transform;
  
 public var MaximumLookDistance : float = 15;
 public var MaximumAttackDistance : float = 10;
-public var FollowSpeed : float = 5;
+public var FollowSpeed : float = 10;
 public var MinimumDistanceFromPlayer : float = 2;
 var MoveSpeed = 5.0;
  
