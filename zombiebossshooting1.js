@@ -6,20 +6,13 @@ var timeBetweenShots : float = 2.0;
 var damp : float = 6;
 var spitting : AudioClip;
 
-function Start()
-{
-	var go = GameObject.FindGameObjectWithTag("Player");
-		LookAtTarget = go.transform;
-}
-
 function Update()
 {
-
 	if(LookAtTarget)
 	{
 		//var rotate = Quaternion.LookRotation(LookAtTarget.position - transform.position);
 		//transform.rotation = Quaternion.Slerp(transform.rotation, rotate, Time.deltaTime * damp);
-		
+
 		if (nextShotTime <= Time.time)
 		{
 			Shoot();
@@ -29,9 +22,8 @@ function Update()
 }
 
 function Shoot(){
-
-		var spit = Instantiate(spit, transform.position + Vector2(0, 0), Quaternion.identity);
+		var spit = Instantiate(spit, transform.position + Vector2(0, 0.6), Quaternion.identity);
     spit.rigidbody.AddForce(transform.forward * spitSpeed);
     Destroy(spit, Random.Range(0.4, 1));
-		audio.PlayOneShot(spitting);
+		//audio.PlayOneShot(vomit);
 }
